@@ -1,7 +1,7 @@
 const parse = {
     singleline: (line) => new Promise((resolve, reject) => {
-        let arguments = line.split(" ")
-        const instruction = arguments.shift()
+        let arguments = line.trim().split(" ")
+        const instruct = arguments.shift()
 
         //Parse arguments to ints
         arguments = arguments.map(x => {
@@ -9,27 +9,38 @@ const parse = {
             //Not a number
             if (isNaN(parseInt(x))) {
                 //A variable (register)
-                if (eval(x))
+                if (eval("typeof " + x) != "undefined")
                     //variable represents integer
                     if (!isNaN(parseInt(eval(x))))
                         return parseInt(eval(x))
             }
-            else return parseInt(x)
+            else if(!x.includes(",") && !x.includes(".")) return parseInt(x)
             
             //Not parseable as integer
             return undefined
 
         });
-
-        console.log(arguments)
         
         if (arguments.includes(undefined))
             return reject("Syntax Error")
 
-        if (instructs[instruction]) {
-            if (instructs[instruction].args == arguments.length) {
-                instructs[instruction].r(arguments)
-                update()
+        //Instruction is either mentioned by name or code
+        let instruction;
+        if (isNaN(parseInt(instruct)))
+            instruction = instructs[instruct];
+        else {
+            //Loop through instructions to find matching code
+            for (let property in instructs) {
+                let instruction_ = instructs[property];
+                if (instruction_.code == instruct)
+                    instruction = instruction_
+            }
+        }
+        
+        if (instruction) {
+            if (instruction.args == arguments.length) {
+                instruction.r(arguments)
+                resolve();
             } else reject("SyntaxError")
         } else reject("Invalid instruction")
     })

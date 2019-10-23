@@ -20,6 +20,7 @@ script.
         //Enter pressed
         if (event.keyCode === 13) {
             parse.singleline(eval_.value)
+            .then(update)
             .catch(alert)
             eval_.value = "";
 
