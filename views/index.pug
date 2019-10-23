@@ -1,0 +1,61 @@
+h1 mikasa
+script(src="mikasa.js")
+script(src="parser.js")
+link(rel="stylesheet" type="text/css" href="style.css")
+
+table#table
+    tr#table--header_row
+        th Address
+        th Value
+
+input#eval(placeholder="Eval")
+
+script.
+    const table = document.getElementById("table");
+    const eval_ = document.getElementById("eval");
+
+    //Handle eval
+    eval_.addEventListener("keyup", function(event) {
+        
+        //Enter pressed
+        if (event.keyCode === 13) {
+            parse.singleline(eval_.value)
+            .catch(alert)
+            eval_.value = "";
+
+        }
+    
+    });
+
+    function update() {
+
+        //First row is header row
+        let table_content = "<tr id=\"table--header_row\"><th>Address</th><th>Value</th></tr>";
+
+        //Add rows to table
+        for (let address = 3000; address < 3021; address++) {
+            const value = stack[address];
+            
+            //Check if address is register
+            let register = ""
+            switch (address) {
+                case IP:
+                    register += " IP"
+                    break;
+                case SP:
+                    register += " SP"
+                    break;
+                case BP:
+                    register += " BP"
+            }
+
+
+            table_content += `<tr><td class="address${register}">${address}</td><td class="value">${value}</td></tr>`
+        }
+        
+        //Update table
+        table.innerHTML = table_content;
+
+    }
+
+    update();
